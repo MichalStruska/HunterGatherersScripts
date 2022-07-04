@@ -1,0 +1,64 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using BehaviorDesigner.Runtime.Tasks;
+using BehaviorDesigner.Runtime;
+using UnityEngine.AI;
+
+
+public class GetHumanGaitAnimationString : Action
+{
+
+    public SharedGameObject targetGameObject;
+    public SharedString animationString;
+    private NavMeshAgent agent;
+    public HumanGaitList humanGait;
+    public GameObject currentGameObject;
+    public (HumanGaitList X, string Y)[] taskAnimationPairs;
+
+    public override void OnAwake()
+    {
+        currentGameObject = GetDefaultGameObject(targetGameObject.Value);
+        //agent = currentGameObject.GetComponent<NavMeshAgent>();
+    }
+
+    public override TaskStatus OnUpdate()
+    {
+        humanGait = currentGameObject.GetComponent<HumanGaitInfo>().gait;
+        FindAnimation();
+        //switch (humanGait)
+        //{
+        //    case HumanGaitList.Running:
+        //        animationString.Value = "isRunning";
+        //        break;
+        //    case HumanGaitList.Walking:
+        //        animationString.Value = "isWalking";
+        //        break;
+        //    default:
+        //        animationString.Value = "isIdle";
+        //        break;
+        //}
+
+        return TaskStatus.Success;
+    }
+
+    public void FindAnimation()
+    {
+        for (int i = 0; i < taskAnimationPairs.Length; i++)
+        {
+            if (humanGait == taskAnimationPairs[i].X)
+            {
+                animationString.Value = taskAnimationPairs[i].Y;
+                return;
+            }
+        }
+
+        animationString.Value = "isIdle";
+    }
+
+    public override void OnReset()
+    {
+        
+    }
+
+}
