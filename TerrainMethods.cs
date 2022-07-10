@@ -27,7 +27,6 @@ public static class TerrainMethods
 
         int newXCoord = (int)xCoord;
         int newZCoord = (int)zCoord;
-        //Vector3 positionOnTerrain = new Vector3(newXCoord, 0, newXCoord);
         int[] positionOnTerrain = new int[] { newXCoord, newZCoord };
 
         return positionOnTerrain;
@@ -55,6 +54,17 @@ public static class TerrainMethods
             return false;
         }
 
+    }
+
+    public static Vector3 GetTerrainHeight(Vector3 originalTargetPoint)
+    {
+        RaycastHit hit;
+        Vector3 newTargetPoint = new Vector3();
+        if (Physics.Linecast(new Vector3(originalTargetPoint.x, 1000, originalTargetPoint.z), new Vector3(originalTargetPoint.x, -100, originalTargetPoint.z), out hit))
+        {
+            newTargetPoint = hit.point;
+        }
+        return newTargetPoint;
     }
 
 }

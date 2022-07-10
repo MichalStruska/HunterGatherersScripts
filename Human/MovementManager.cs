@@ -36,6 +36,8 @@ public class MovementManager : MonoBehaviour
     public TMP_Dropdown GaitDropdown;
     public Vector3 shiftedPoint;
     private float randomTargetShift = 15;
+    public Vector3 tuberPositionShift;
+    public int tuberPositionShiftNumber;
 
     public float idleTime;
 
@@ -72,45 +74,55 @@ public class MovementManager : MonoBehaviour
 
     void Update()
     {
-        Debug.Log("lovi " + shiftedPoint);
         humanTask = GetComponent<HumanInfo>().humanTask;
 
+        Debug.Log("rotace " + startRotating);
+
         GetComponent<MovementInfo>().GetRotation();
+        if (humanTask == HumanTaskList.Digging && Input.GetMouseButtonDown(1))
+        {
+            QuitDigging();
+        }
+
         if (MenuPanelController.isGamePaused)
         {
             //do nothing
         }
-
         else if (GetComponent<HumanInfo>().isHunting && unitNumber == 0)
         {
-            shiftedPoint = prey.transform.position;
+            //shiftedPoint = prey.transform.position;
             UpdateSizeOfHuntingTarget();
-            //CheckIfUpdateHuntingDirection();
+            CheckIfUpdateHuntingDirection();
             GetPositionOfHunterAndPrey();
             SetupTargetIndicator(prey.transform.position);
-            
-            //GoThere(shiftedPoint);
+
         }
-        //else if (startRotating)
-        //{
-        //    Vector3 direction = (TargetObject.transform.position - transform.position).normalized;
-        //    Quaternion lookRotation = Quaternion.LookRotation(direction, Vector3.up);
-        //    transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, 1);
-        //}
+        else if (startRotating)
+        {
+            Vector3 direction = (TargetObject.transform.position - transform.position).normalized;
+            Quaternion lookRotation = Quaternion.LookRotation(direction, Vector3.up);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, 1);
+        }
         else if (Input.GetMouseButtonDown(1) && GetComponent<HumanInfo>().isSelected)
         {
             RightClick();
         }
     }
 
+    private void QuitDigging()
+    {
+        TargetObject.GetComponent<TaskItemManager>().RemoveHuman(gameObject);
+    }
+
     private void UpdateSizeOfHuntingTarget()
     {
-        changeHuntingDirectionLimit = Vector3.Distance(transform.position, shiftedPoint) * .1f;
+        changeHuntingDirectionLimit = Vector3.Distance(prey.transform.position, shiftedPoint) * .5f;
     }
 
     public void CheckIfUpdateHuntingDirection()
     {
-        if (Vector3.Distance(transform.position, shiftedPoint) > Random.Range(changeHuntingDirectionLimit, changeHuntingDirectionLimit + 20f))
+        //Debug.Log("now we moving distance " + Vector3.Distance(prey.transform.position, shiftedPoint));
+        if (Vector3.Distance(prey.transform.position, shiftedPoint) > Random.Range(changeHuntingDirectionLimit, changeHuntingDirectionLimit + 20f))
         {
             UpdateHuntingDirection();
         }
@@ -119,8 +131,14 @@ public class MovementManager : MonoBehaviour
     public void UpdateHuntingDirection()
     {
         shiftedPoint = prey.transform.position;
+        MoveToPoint();
+    }
+
+    public void MoveToPoint()
+    {
+        shiftedPoint = shiftedPoint + new Vector3(20f, 0f, 20f);
+        Debug.Log("now we moving " + shiftedPoint + " " + changeHuntingDirectionLimit);
         actionList.Move(agent, shiftedPoint, locomotionSpeed, unitNumber);
-        //agent.destination = followPoint;
     }
     
     public void GetPositionOfHunterAndPrey()
@@ -198,6 +216,7 @@ public class MovementManager : MonoBehaviour
         }
         else if (DidHitTuber())
         {
+            Debug.Log("hit tuber");
             TargetObject = hit.collider.gameObject;
             int humanTuberNumber = TargetObject.GetComponent<TaskItemManager>().humanCounter;
             if (humanTuberNumber < 4)
@@ -207,7 +226,6 @@ public class MovementManager : MonoBehaviour
         }
         else if (DidHitHut())
         {
-            //HideGaitPanel();
             SetUpTargetTask(HumanTargetTaskList.Idle);
             TargetObject = hit.collider.gameObject;
             hutPosition = hit.collider.transform.position;
@@ -221,7 +239,6 @@ public class MovementManager : MonoBehaviour
             {
                 GetPositionOfHunterAndPrey();
             }
-            //InvokeRepeating("UpdateHuntingDirection", 2f, 2f);
             Player.GetComponent<PanelController>().quitHuntButton.gameObject.SetActive(true);
             GetComponent<HumanInfo>().humanTask = potentialTask;
             GetComponent<HumanInfo>().isHunting = true;
@@ -230,12 +247,10 @@ public class MovementManager : MonoBehaviour
             SetupTargetIndicator(shiftedPoint);
 
             GoThere(shiftedPoint);
-            //actionList.Move(agent, followPoint, locomotionSpeed, unitNumber);
 
             Player.GetComponent<InputManager>().followedPrey = prey;
 
         }
-        //SetupGaitInterface(gaitInterfaceValue);
     }
 
     public void GroundWalk()
@@ -257,9 +272,22 @@ public class MovementManager : MonoBehaviour
         SetUpLocomotion();
         SetUpTargetTask(HumanTargetTaskList.Digging);
         Vector3 tuberPosition = hit.collider.transform.position;
-        shiftedPoint = tuberPosition + TargetObject.GetComponent<TaskItemManager>().positionShifts[humanTuberNumber];
-        GoThere(new Vector3(originalHitPoint.x, originalHitPoint.y + 16, originalHitPoint.z));
+        tuberPosition = TerrainMethods.GetTerrainHeight(tuberPosition);
+        Debug.Log("posunuti " + tuberPositionShift + " " + tuberPosition);
+        shiftedPoint = tuberPosition + tuberPositionShift;//positionShifts[humanTuberNumber];
+        GoThere(new Vector3(tuberPosition.x, tuberPosition.y, tuberPosition.z));
     }
+
+    /*private void GoDigTheTuber(int humanTuberNumber)
+    {
+        TargetObject.GetComponent<TaskItemManager>().AddHuman(gameObject);
+        SetUpLocomotion();
+        SetUpTargetTask(HumanTargetTaskList.Digging);
+        Vector3 tuberPosition = hit.collider.transform.position;
+        Debug.Log("pozice jidla " + tuberPosition);
+        shiftedPoint = tuberPosition; //+ TargetObject.GetComponent<TaskItemManager>().positionShifts02[humanTuberNumber];
+        GoThere(new Vector3(originalHitPoint.x, originalHitPoint.y + 16, originalHitPoint.z));
+    }*/
 
     private bool DidHitGround()
     {
@@ -330,7 +358,6 @@ public class MovementManager : MonoBehaviour
 
     void LateUpdate()
     {
-        //transform.rotation = Quaternion.LookRotation(agent.velocity.normalized);
         if (agent.velocity.sqrMagnitude > Mathf.Epsilon)
         {
             transform.rotation = Quaternion.LookRotation(agent.velocity.normalized);
@@ -340,6 +367,7 @@ public class MovementManager : MonoBehaviour
     
     public void GoThere(Vector3 targetIndicatorPosition)
     {
+        Debug.Log("go there");
         SetupGaitInterface(gaitInterfaceValue);
         SetupTargetIndicator(targetIndicatorPosition);
         SetUpLocomotion();
@@ -404,12 +432,8 @@ public class MovementManager : MonoBehaviour
         {
             GetComponent<HumanInfo>().isHunting = false;
             originalHitPoint = transform.position + new Vector3(10, 0, 10);
-            //shiftedPoint = transform.position + new Vector3(4,0,4);
             GroundWalk();
-            //actionList.Move(agent, shiftedPoint, locomotionSpeed, unitNumber);
-            //GetComponent<HumanInfo>().humanTargetTask = HumanTargetTaskList.Idle;
-            //GoThere(shiftedPoint);
-            //CancelInvoke("UpdateHuntingDirection");
+            
         }
     }
 }

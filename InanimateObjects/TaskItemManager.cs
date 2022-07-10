@@ -11,7 +11,8 @@ public class TaskItemManager : MonoBehaviour
     public float timeLimit = 20f;
     public bool taskCompleted;
     public int humanCounter;
-    public Vector3[] positionShifts = new[] {new Vector3(100f,0f,0f), new Vector3(0f,0f,100f), new Vector3(-40f, 0f, 0f), new Vector3(0f, 0f, -40f) };
+    [SerializeField]
+    public Positions[] positionShifts = new[] { new Positions(new Vector3(10f, 0f, 0f), true), new Positions(new Vector3(0f, 0f, 10f), true), new Positions(new Vector3(-10f, 0f, 0f), true), new Positions(new Vector3(0f, 0f, -10f), true) };
 
     void Start()
     {
@@ -33,16 +34,52 @@ public class TaskItemManager : MonoBehaviour
         taskTimeMultiplier--;
         humanCounter++;
         taskingHumans.Add(Human);
-
+        GetPositionShift(Human);
         foreach (GameObject hu in taskingHumans)
         {
             hu.GetComponent<HumanInfo>().taskTimeMultiplier = taskTimeMultiplier;
         }
     }
 
+    public void RemoveHuman(GameObject Human)
+    {
+        taskTimeMultiplier--;
+        humanCounter--;
+        taskingHumans.Remove(Human);
+        positionShifts[Human.GetComponent<MovementManager>().tuberPositionShiftNumber].availability = true;
+        foreach (GameObject hu in taskingHumans)
+        {
+            hu.GetComponent<HumanInfo>().taskTimeMultiplier = taskTimeMultiplier;
+        }
+    }
+
+    public void GetPositionShift(GameObject Human)
+    {
+        for (int i = 0; i < positionShifts.Length; i++)
+        {
+            if (positionShifts[i].availability == true)
+            {
+                AssignPosition(Human, i);
+            }
+        }        
+    }
+
+    public void AssignPosition(GameObject Human, int positionNumber)
+    {
+        Human.GetComponent<MovementManager>().tuberPositionShift = positionShifts[positionNumber].position;
+        Human.GetComponent<MovementManager>().tuberPositionShiftNumber = positionNumber;
+        positionShifts[positionNumber].availability = false;
+        
+    }
+
     public void WorkOnTask()
     {
         timer += 1f;
+    }
+
+    public bool IsTaskDone()
+    {
+        return humanCounter == 0;
     }
 
     public void DestroyObject()
