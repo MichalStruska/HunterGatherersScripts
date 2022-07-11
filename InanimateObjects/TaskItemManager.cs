@@ -22,6 +22,7 @@ public class TaskItemManager : MonoBehaviour
 
     void Update()
     {
+        Debug.Log("je hotovo " + humanCounter);
         if (timer > timeLimit)
         {
             taskCompleted = true;
@@ -79,6 +80,7 @@ public class TaskItemManager : MonoBehaviour
 
     public bool IsTaskDone()
     {
+        Debug.Log("je hotovo " + humanCounter);
         return humanCounter == 0;
     }
 

@@ -76,11 +76,6 @@ public class GUISelection : MonoBehaviour
             activeTargetImagesBool.Add(true);
         }
 
-        foreach (GameObjectWithTaskLoadingBar g in taskLoadingBars)
-        {
-            Debug.Log("je prazdny " + g.empty);
-        }
-
         screenCoeffVert = (float)Screen.height / 416f;
         screenCoeffHor = (float)Screen.width / 442f; //442f;
     }
@@ -100,16 +95,16 @@ public class GUISelection : MonoBehaviour
         foreach (GameObject hu in selectedUnits)
         {            
             IndicatorPosition(hu.GetComponent<HumanInfo>().selectionIndicator.rectTransform, new Vector3(hu.transform.position.x, hu.transform.position.y + indicatorHeight, hu.transform.position.z));
-            SetIndicatorSize(hu.GetComponent<HumanInfo>().selectionIndicator.rectTransform, new Vector3(hu.transform.position.x, hu.transform.position.y + indicatorHeight, hu.transform.position.z), 11f, 11f);
+            SetIndicatorSize(hu.GetComponent<HumanInfo>().selectionIndicator.rectTransform, new Vector3(hu.transform.position.x, hu.transform.position.y + indicatorHeight, hu.transform.position.z), 20f, 20f);
             IndicatorPosition(hu.GetComponent<HumanInfo>().targetIndicator.rectTransform, hu.GetComponent<HumanInfo>().targetIndicatorPosition);
-            SetIndicatorSize(hu.GetComponent<HumanInfo>().targetIndicator.rectTransform, hu.GetComponent<HumanInfo>().targetIndicatorPosition, 11f, 11f);
+            SetIndicatorSize(hu.GetComponent<HumanInfo>().targetIndicator.rectTransform, hu.GetComponent<HumanInfo>().targetIndicatorPosition, 20f, 20f);
             
         }
 
 
         foreach (GameObjectWithTaskLoadingBar taskLoadingBarObject in taskLoadingBars)
         {
-            if (IsTaskLoadingBarActive(taskLoadingBarObject) == false)
+            if (IsTaskLoadingBarEmpty(taskLoadingBarObject) == false)
             {
                 UpdateTaskLoadingBarPosition(taskLoadingBarObject);
                 UpdateTaskLoadingBarValue(taskLoadingBarObject);
@@ -138,8 +133,17 @@ public class GUISelection : MonoBehaviour
 
         float newSizeVert = originalHeight * screenCoeffHor * distCoeff;
         float newSizeHor = originalWidth * screenCoeffHor * distCoeff;
-        rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, newSizeVert);
-        rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, newSizeHor);
+        if (newSizeVert < originalWidth)
+        {
+            rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, newSizeVert);
+            rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, newSizeHor);
+        }
+        else
+        {
+            rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, originalHeight);
+            rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, originalWidth);
+        }
+        
 
     }
 
@@ -175,14 +179,14 @@ public class GUISelection : MonoBehaviour
         loadingBar.SetActive(false);
 
         taskLoadingBars[barNumber].empty = true;
-        taskLoadingBars[barNumber].slider = slider;
+        taskLoadingBars[barNumber].slider = loadingBar;
         taskLoadingBars[barNumber].gameObject = null;
     }
 
     public void UpdateTaskLoadingBarPosition(GameObjectWithTaskLoadingBar taskLoadingBarObject)
     {
 
-        SetIndicatorSize(taskLoadingBarObject.slider.GetComponent<RectTransform>(), taskLoadingBarObject.gameObject.transform.position, 30f, 11f);
+        SetIndicatorSize(taskLoadingBarObject.slider.GetComponent<RectTransform>(), taskLoadingBarObject.gameObject.transform.position, 18f, 4f);
         SetBarPosition(taskLoadingBarObject.slider, taskLoadingBarObject.gameObject.transform.position);
    
     }
@@ -190,10 +194,9 @@ public class GUISelection : MonoBehaviour
     public void UpdateTaskLoadingBarValue(GameObjectWithTaskLoadingBar taskLoadingBarObject)
     {
         taskLoadingBarObject.slider.GetComponent<Slider>().value = (taskLoadingBarObject.gameObject.GetComponent<TaskItemManager>().timer / taskLoadingBarObject.gameObject.GetComponent<TaskItemManager>().timeLimit) * 100;
-        Debug.Log("bar value je " + taskLoadingBarObject.gameObject.GetComponent<TaskItemManager>().timer + " " + taskLoadingBarObject.slider.GetComponent<Slider>().value);
     }
 
-    private bool IsTaskLoadingBarActive(GameObjectWithTaskLoadingBar taskLoadingBarObject)
+    private bool IsTaskLoadingBarEmpty(GameObjectWithTaskLoadingBar taskLoadingBarObject)
     {
         return taskLoadingBarObject.empty;
     }
@@ -209,7 +212,7 @@ public class GUISelection : MonoBehaviour
     {
         for(int i = 0; i < taskLoadingBars.Length; i++)
         {
-            if (IsTaskLoadingBarActive(taskLoadingBars[i]))
+            if (IsTaskLoadingBarEmpty(taskLoadingBars[i]))
             {
                 taskLoadingBars[i].gameObject = workingObject;
                 taskLoadingBars[i].empty = false;
@@ -223,8 +226,14 @@ public class GUISelection : MonoBehaviour
     {
         for (int i = 0; i < taskLoadingBars.Length; i++)
         {
-            if (taskLoadingBars[i].gameObject.activeSelf == false || taskLoadingBars[i].gameObject.GetComponent<TaskItemManager>().IsTaskDone())
+            
+            if (taskLoadingBars[i].empty == true)
             {
+                // do nothing
+            }
+            else if (taskLoadingBars[i].gameObject.activeSelf == false || taskLoadingBars[i].gameObject.GetComponent<TaskItemManager>().IsTaskDone())
+            {
+                
                 taskLoadingBars[i].gameObject = null;
                 taskLoadingBars[i].empty = true;
                 taskLoadingBars[i].slider.SetActive(false);
