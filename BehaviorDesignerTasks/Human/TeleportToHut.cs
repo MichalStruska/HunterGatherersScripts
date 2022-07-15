@@ -24,8 +24,10 @@ public class TeleportToHut : Action
 
     public override TaskStatus OnUpdate()
     {
-        hutPosition = GetComponent<MovementManager>().originalHitPoint;
-        currentGameObject.transform.position = new Vector3(hutPosition.x, hutPosition.y, hutPosition.z) + TargetHut.Value.GetComponent<HutManager>().AddHuman();
+        //hutPosition = GetComponent<MovementManager>().originalHitPoint;
+        hutPosition = TargetHut.Value.GetComponent<Collider>().bounds.center;
+        Debug.Log("pozice v hute " + hutPosition);
+        currentGameObject.transform.position = new Vector3(hutPosition.x, hutPosition.y, hutPosition.z); //+ TargetHut.Value.GetComponent<HutManager>().AddHuman();
         
         return TaskStatus.Success;
     }

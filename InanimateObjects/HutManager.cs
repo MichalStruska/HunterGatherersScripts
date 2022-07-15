@@ -41,6 +41,7 @@ public class HutManager : MonoBehaviour
         for (int i = 0; i < positions.Length; i++)
         {
             Positions position = positions[i];
+            Debug.Log("volna pozice " + position.availability + " " + position.position);
             if (position.availability)
             {
                 humanCounter++;

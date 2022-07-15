@@ -105,16 +105,16 @@ public class MovementManager : MonoBehaviour
         }
         else if (Input.GetMouseButtonDown(1) && GetComponent<HumanInfo>().isSelected)
         {
-            Debug.Log("odejdi");
-            if (IsDoubleClick())
+            isDoubleClick = IsDoubleClick();
+            RightClick();
+            /*if (IsDoubleClick())
             {
                 DoubleRightClick();
             }
             else
             {
                 RightClick();
-            }
-            
+            }*/
         }
     }
 
@@ -122,6 +122,7 @@ public class MovementManager : MonoBehaviour
     {
         startRotating = false;
         TargetObject.GetComponent<TaskItemManager>().RemoveHuman(gameObject);
+        GetComponent<HumanTaskManager>().QuitDigging();
     }
 
     private void UpdateSizeOfHuntingTarget()
@@ -188,6 +189,7 @@ public class MovementManager : MonoBehaviour
         potentialTask = HumanTaskList.Running;
         potentialGait = HumanGaitList.Running;
         GoThere(GetComponent<HumanInfo>().targetIndicatorPosition);
+        
     }
 
     public void RightClick()
@@ -250,7 +252,7 @@ public class MovementManager : MonoBehaviour
             shiftedPoint = prey.transform.position;
             UpdateSizeOfHuntingTarget();
             SetupTargetIndicator(shiftedPoint);
-
+            CheckForDoubleClick();
             GoThere(shiftedPoint);
 
             Player.GetComponent<InputManager>().followedPrey = prey;
@@ -268,6 +270,7 @@ public class MovementManager : MonoBehaviour
             SetupGaitInterface(gaitInterfaceValue);
         }
         GetIndividualTarget(originalHitPoint);
+        CheckForDoubleClick();
         GoThere(shiftedPoint);        
     }
 
@@ -279,6 +282,7 @@ public class MovementManager : MonoBehaviour
         Vector3 tuberPosition = hit.collider.transform.position;
         tuberPosition = TerrainMethods.GetTerrainHeight(tuberPosition);
         shiftedPoint = tuberPosition + tuberPositionShift;
+        CheckForDoubleClick();
         GoThere(new Vector3(tuberPosition.x, tuberPosition.y, tuberPosition.z));
     }
 
@@ -383,11 +387,19 @@ public class MovementManager : MonoBehaviour
         GaitDropdown.value = gaitValue;
     }
 
+    public void CheckForDoubleClick()
+    {
+        if (isDoubleClick)
+        {
+            DoubleRightClick();
+        }
+    }
+
     public void GoToHut()
     {
         originalHitPoint = hutPosition;
         shiftedPoint = new Vector3(hutPosition.x -20, hutPosition.y, hutPosition.z - 20);
-
+        CheckForDoubleClick();
         GoThere(new Vector3(hutPosition.x, hutPosition.y + 16, hutPosition.z));
       
         GetComponent<HumanInfo>().humanTask = HumanTaskList.Walking;
