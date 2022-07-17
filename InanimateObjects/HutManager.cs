@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class HutManager : MonoBehaviour
 {
+    [SerializeField]
     public Positions[] positions;
     public int distanceFromCenter = 7;
     public int humanCounter;
@@ -34,7 +35,7 @@ public class HutManager : MonoBehaviour
         return false;
     }
 
-    public Vector3 AddHuman()
+    public Vector3 GetEmptyHutPosition()
     {
         //int spaceCounter = 0;
 
@@ -44,7 +45,7 @@ public class HutManager : MonoBehaviour
             Debug.Log("volna pozice " + position.availability + " " + position.position);
             if (position.availability)
             {
-                humanCounter++;
+                
                 if (humanCounter == humanLimit)
                 {
                     Player.GetComponent<HutPanelController>().SleepButton.interactable = false;
@@ -53,7 +54,43 @@ public class HutManager : MonoBehaviour
                 return position.position;
             }
         }
-        return new Vector3(0,0,0);
+        return new Vector3(0, 0, 0);
+    }
+
+    public void AddHuman(GameObject human)
+    {
+        FindEmptyPositionAndOcuppy(human);
+        humanCounter++;
+        CheckHutCapacityAndDisableSleepButton();
+        Player.GetComponent<HutPanelController>().RefreshHumanPanel(gameObject);
+        
+    }
+
+    public void FindEmptyPositionAndOcuppy(GameObject human)
+    {
+        for (int i = 0; i < positions.Length; i++)
+        {
+            Positions position = positions[i];
+            if (position.availability)
+            {
+                OcuppyPosition(i, human);
+                return;
+            }
+        }
+    }
+
+    public void CheckHutCapacityAndDisableSleepButton()
+    {
+        if (humanCounter == humanLimit)
+        {
+            Player.GetComponent<HutPanelController>().SleepButton.interactable = false;
+        }
+    }
+
+    public void OcuppyPosition(int positionNumber, GameObject human)
+    {
+        positions[positionNumber].availability = false;
+        positions[positionNumber].human = human;
     }
 
     public void SubstractHuman()

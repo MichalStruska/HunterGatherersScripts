@@ -15,8 +15,6 @@ public class PanelController : MonoBehaviour
     public CanvasGroup HumanInfoPanel;
     public CanvasGroup HumanGaitPanel;
     public CanvasGroup HumanInventoryPanel;
-    public CanvasGroup HumanHutPeoplePanel;
-    public CanvasGroup HutInventoryPanel;
     public Slider speedSlider;
     public Button quitHuntButton;
     public Button NextHumanButton;
@@ -34,10 +32,7 @@ public class PanelController : MonoBehaviour
     public Text clockText;
 
     private bool isHuntingPanelOn = false;
-    private int pickedHumanNumber;
-    public Image[] humanImages;
-    public Color FreeSpaceColor;
-    public Color TakenSpaceColor;
+    private int pickedHumanNumber;    
 
     void Start()
     {
@@ -47,8 +42,6 @@ public class PanelController : MonoBehaviour
         HidePanel(HumanInfoPanel);
         HidePanel(HumanGaitPanel);
         HidePanel(HumanInventoryPanel);
-        HidePanel(HumanHutPeoplePanel);
-        HidePanel(HutInventoryPanel);
 
         speedSlider.onValueChanged.AddListener(delegate { SpeedChanged(); });
         speedSlider.enabled = true;
@@ -60,11 +53,6 @@ public class PanelController : MonoBehaviour
         GaitDropdown.onValueChanged.AddListener(delegate { GaitDropdownChangeReceiver(GaitDropdown.value); });
         quitHuntButton.gameObject.SetActive(false);
         pickedHumanNumber = 0;
-
-        foreach (Image HumanImage in humanImages)
-        {
-            HumanImage.color = FreeSpaceColor;
-        }
     }
 
     void Update()
@@ -254,48 +242,4 @@ public class PanelController : MonoBehaviour
     {
         HumanPickerPanel.interactable = true;
     }
-
-    public void HutSelected(GameObject Hut)
-    {
-        ShowPanel(HumanHutPeoplePanel);
-        ShowPanel(HutInventoryPanel);
-        ColorHutSpaces(Hut);
-    }
-    
-    public void HutDeselected()
-    {
-        HidePanel(HumanHutPeoplePanel);
-        HidePanel(HutInventoryPanel);
-    }
-
-    public void ColorHutSpaces(GameObject Hut)
-    {
-        int positionCounter = 0;
-        foreach (Positions position in Hut.GetComponent<HutManager>().positions)
-        {
-            if (position.availability)
-            {
-                HutSpaceFree(positionCounter);
-                Debug.Log("free space");
-            }
-            else
-            {
-                HutSpaceTaken(positionCounter);
-            }
-            
-            positionCounter++;
-        }
-    }
-
-    public void HutSpaceTaken(int spaceNumber)
-    {
-        humanImages[spaceNumber].color = TakenSpaceColor;
-        Debug.Log("color taken");
-    }
-
-    public void HutSpaceFree(int spaceNumber)
-    {
-        humanImages[spaceNumber].color = FreeSpaceColor;
-    }
-
 }

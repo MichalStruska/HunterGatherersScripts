@@ -38,6 +38,7 @@ public class HumanInfo : OrganismInfoBase
     public int taskTimeMultiplier = 7;
 
     public bool isHunting = false;
+    public bool isInHut = false;
 
     public float progressBarValue;
 

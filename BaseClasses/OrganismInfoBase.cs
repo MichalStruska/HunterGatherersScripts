@@ -12,6 +12,10 @@ public abstract class OrganismInfoBase : MonoBehaviour
     public float coreTemperatureMax;
     public float coreTemperatureMin;
 
+    public float fatigue;
+    public float fatigueMax;
+    public float fatigueMin;
+
     public float energy;
     public float energyMax;
     public float energyMin;

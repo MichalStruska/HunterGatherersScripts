@@ -86,7 +86,6 @@ public class MovementManager : MonoBehaviour
         }
         if (humanTask == HumanTaskList.Digging && Input.GetMouseButtonDown(1))
         {
-            Debug.Log("je oznaceny " + GetComponent<HumanInfo>().isSelected);
             QuitDigging();
         }
 
@@ -107,14 +106,13 @@ public class MovementManager : MonoBehaviour
         {
             isDoubleClick = IsDoubleClick();
             RightClick();
-            /*if (IsDoubleClick())
-            {
-                DoubleRightClick();
-            }
-            else
-            {
-                RightClick();
-            }*/
+            
+        }
+
+        if (GetComponent<HumanInfo>().isInHut && Input.GetMouseButtonDown(1))
+        {
+            //TeleportOutOfHut();
+            Player.GetComponent<HutPanelController>().ExitHut();
         }
     }
 
@@ -236,7 +234,7 @@ public class MovementManager : MonoBehaviour
             SetUpTargetTask(HumanTargetTaskList.Idle);
             TargetObject = hit.collider.gameObject;
             hutPosition = hit.collider.transform.position;
-            Player.GetComponent<HutPanelController>().ShowPanel();
+            Player.GetComponent<HutPanelController>().ShowPanel(Player.GetComponent<HutPanelController>().HumanHutPanel);
         }
         else if (DidHitAnimal())
         {
@@ -439,5 +437,12 @@ public class MovementManager : MonoBehaviour
             GroundWalk();
             
         }
+    }
+
+    public void TeleportOutOfHut()
+    {
+        GetComponent<HumanInfo>().isInHut = false;
+        GetComponent<HumanInfo>().humanTask = HumanTaskList.Idle;
+        transform.position = new Vector3(hutPosition.x - 50, hutPosition.y, hutPosition.z - 50);
     }
 }

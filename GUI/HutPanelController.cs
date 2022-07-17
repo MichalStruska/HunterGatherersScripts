@@ -13,8 +13,7 @@ public struct HumanButton
 }
 
 public class HutPanelController : MonoBehaviour
-{
-    
+{   
     public GameObject HumanHutPanel;
     
     public Button EatButton;
@@ -30,56 +29,76 @@ public class HutPanelController : MonoBehaviour
 
     public Text TuberCounterText;
 
+    public GameObject HumanHutPeoplePanel;
+    public GameObject HutInventoryPanel;
+
+    public Color FreeSpaceColor;
+    public Color TakenSpaceColor;
+
+    public int selectedHumanNumber;
+
     [SerializeField]
     public HumanButton[] humanButtons = new HumanButton[6];
 
     void Start()
     {
-        HidePanel();
+        HidePanel(HumanHutPanel);
+        HidePanel(HutInventoryPanel);
+        HidePanel(HumanHutPeoplePanel);
 
         EatButton.onClick.AddListener(delegate { EatInHut(); });
         BringResourcesButton.onClick.AddListener(delegate { BringResources(); });
         SleepButton.onClick.AddListener(delegate { SleepInHut(); });
 
-        panelOnCounter = 0;
-        leftClickOnPanel = false;
+        for (int i = 0; i < humanButtons.Length; i++)
+        {
+            int x = i;
+            humanButtons[i].button.onClick.AddListener(delegate { ClickOnHumanButton(x); });
+            HutSpaceFree(humanButtons[i].button);
+        }
 
+        ResetHutPanelCounter();
+        leftClickOnPanel = false;
 
     }
 
     void Update()
     {
-        if (isHutPanelOn)
+        if (IsHutPanelOn())
         {
             panelOnCounter++;
             if (panelOnCounter > 3 && Input.GetMouseButtonDown(1))
             {
-                HidePanel();
+                HidePanel(HumanHutPanel);
+                ResetHutPanelCounter();
             }
 
             else if (!GetComponent<InputManager>().IsPointerOverUIObject() && Input.GetMouseButtonDown(0))
             {
-                HidePanel();
+                HidePanel(HumanHutPanel);
+                ResetHutPanelCounter();
             }
         }
 
     }
 
-    public void ShowPanel()
+    public void ShowPanel(GameObject panel)
     {
-
-        //GetComponent<PanelController>().ShowPanel(HumanHutPanel);
-        Debug.Log("show hut");
-        HumanHutPanel.SetActive(true);
-        isHutPanelOn = true;
-
+        panel.SetActive(true);
     }
 
-    public void HidePanel()
+    public void HidePanel(GameObject panel)
     {
-        //GetComponent<PanelController>().HidePanel(HumanHutPanel);
-        HumanHutPanel.SetActive(false);
-        isHutPanelOn = false;
+        panel.SetActive(false);
+    }
+
+    public bool IsHutPanelOn()
+    {
+        return HumanHutPanel.activeSelf;
+    }
+
+    public void ResetHutPanelCounter()
+    {
         panelOnCounter = 0;
     }
 
@@ -124,7 +143,8 @@ public class HutPanelController : MonoBehaviour
             unit.GetComponent<MovementManager>().GoToHut();
             unit.GetComponent<MovementManager>().GoToEat();
         }
-        HidePanel();
+        HidePanel(HumanHutPanel);
+        ResetHutPanelCounter();
     }
 
     public void BringResources()
@@ -135,7 +155,8 @@ public class HutPanelController : MonoBehaviour
             unit.GetComponent<MovementManager>().GoBringResources();
             unit.GetComponent<MovementManager>().GoToHut();
         }
-        HidePanel();
+        HidePanel(HumanHutPanel);
+        ResetHutPanelCounter();
     }
 
     public void SleepInHut()
@@ -146,7 +167,8 @@ public class HutPanelController : MonoBehaviour
             unit.GetComponent<MovementManager>().GoToHut();
             unit.GetComponent<MovementManager>().GoToSleep();
         }
-        HidePanel();
+        HidePanel(HumanHutPanel);
+        ResetHutPanelCounter();
     }
 
     private bool IsFoodInHut()
@@ -158,9 +180,71 @@ public class HutPanelController : MonoBehaviour
         return false;
     }
 
+    public void ClickOnHumanButton(int humanButtonNumber)
+    {
+        Debug.Log("clocked od human " + humanButtons[humanButtonNumber].human);
+
+        if (humanButtons[humanButtonNumber].human != null)
+        {
+            Player.GetComponent<InputManager>().DeselectHuman();
+            Player.GetComponent<InputManager>().SelectHuman(humanButtons[humanButtonNumber].human);
+        }
+    }
+
+    public void ExitHut()
+    {
+        HutSpaceFree(humanButtons[selectedHumanNumber].button);
+        humanButtons[selectedHumanNumber].human = null;
+    }
+
     public void UpdateTuberCounter(int tuberCounter, int maxTuberNumber)
     {
         TuberCounterText.text = tuberCounter.ToString() + "/" + maxTuberNumber.ToString();
+    }
+
+
+    public void HutSelected(GameObject Hut)
+    {
+        ShowPanel(HumanHutPeoplePanel);
+        ShowPanel(HutInventoryPanel);
+        RefreshHumanPanel(Hut);
+    }
+
+    public void HutDeselected()
+    {
+        HidePanel(HumanHutPeoplePanel);
+        HidePanel(HutInventoryPanel);
+    }
+
+    public void RefreshHumanPanel(GameObject Hut)
+    {
+        
+        int positionCounter = 0;
+        foreach (Positions position in Hut.GetComponent<HutManager>().positions)
+        {
+            if (position.availability)
+            {
+                HutSpaceFree(humanButtons[positionCounter].button);
+            }
+            else
+            {
+                HutSpaceTaken(humanButtons[positionCounter].button);
+                humanButtons[positionCounter].human = position.human;
+            }
+            Debug.Log("refresh panel " + humanButtons[positionCounter].human);
+
+            positionCounter++;
+        }
+    }
+
+    public void HutSpaceTaken(Button button)
+    {
+        button.GetComponent<Image>().color = TakenSpaceColor;
+    }
+
+    public void HutSpaceFree(Button button)
+    {
+        button.GetComponent<Image>().color = FreeSpaceColor;
     }
 
 }

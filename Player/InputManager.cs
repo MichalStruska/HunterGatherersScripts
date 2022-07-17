@@ -102,10 +102,6 @@ public class InputManager : MonoBehaviour
             {
                 //do nothing
             }
-            //if (hit.collider.tag != "Selectable" && !IsPointerOverUIObject()) //&& !EventSystem.current.IsPointerOverGameObject())
-            //{
-            //    DeselectHuman();
-            //}
             else if (hit.collider.tag == "Selectable")
             {
                 DeselectHut();
@@ -131,12 +127,12 @@ public class InputManager : MonoBehaviour
 
     public void SelectHut(GameObject Hut)
     {
-        GetComponent<PanelController>().HutSelected(Hut);
+        GetComponent<HutPanelController>().HutSelected(Hut);
     }
 
     public void DeselectHut()
     {
-        GetComponent<PanelController>().HutDeselected();
+        GetComponent<HutPanelController>().HutDeselected();
     }
 
     public void SelectHuman(GameObject Human)
@@ -145,18 +141,6 @@ public class InputManager : MonoBehaviour
 
         GetComponent<PanelController>().HumanDeselected();
 
-        //if (units != null && units.Length != 0)
-        //{
-        //    foreach (GameObject unit in units)
-        //    {
-        //        if (unit.GetComponent<HumanInfo>().isSelected)
-        //        {
-        //            unit.GetComponent<HumanInfo>().DeselectHuman();
-        //            selectedUnits.Clear();
-
-        //        }
-        //    }
-        //}
         selectedInfo.isSelected = true;
         selectedUnits.Add(Human);
         ShowHumanInfo(Human);
