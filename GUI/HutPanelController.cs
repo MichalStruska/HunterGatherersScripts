@@ -5,6 +5,12 @@ using TMPro;
 using UnityEngine.UI;
 using DigitalRuby.WeatherMaker;
 
+[System.Serializable]
+public struct HumanButton
+{
+    public GameObject human;
+    public Button button;
+}
 
 public class HutPanelController : MonoBehaviour
 {
@@ -23,6 +29,9 @@ public class HutPanelController : MonoBehaviour
     private bool isHutPanelOn;
 
     public Text TuberCounterText;
+
+    [SerializeField]
+    public HumanButton[] humanButtons = new HumanButton[6];
 
     void Start()
     {

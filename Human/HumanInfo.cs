@@ -29,7 +29,7 @@ public class HumanInfo : OrganismInfoBase
     public bool isInfoShown = false;
     private PanelController panelController;
 
-    public Image selectionIndicator;
+    public GameObject selectionIndicator;
     public Image targetIndicator;
     public Vector3 targetIndicatorPosition;
 
@@ -66,7 +66,7 @@ public class HumanInfo : OrganismInfoBase
     {
         isSelected = true;
         MinimapIndicator.GetComponent<MinimapIndicatorManager>().SetIndicatorColorSelect();
-        selectionIndicator.enabled = true;
+        selectionIndicator.SetActive(true);
         if (hasTarget)
         {
             targetIndicator.enabled = true;
@@ -78,7 +78,7 @@ public class HumanInfo : OrganismInfoBase
         isSelected = false;
         MinimapIndicator.GetComponent<MinimapIndicatorManager>().SetIndicatorColorDeselect();
         isInfoShown = false;
-        selectionIndicator.enabled = false;
+        selectionIndicator.SetActive(false);
         targetIndicator.enabled = false;
     }
 

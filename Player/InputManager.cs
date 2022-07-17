@@ -208,7 +208,7 @@ public class InputManager : MonoBehaviour
     {
         unit.GetComponent<HumanInfo>().isInfoShown = true;
         HumanWithShownInfo = unit;
-        SelectionCanvas.GetComponent<GUISelection>().setIndicatorColor(unit.GetComponent<HumanInfo>().selectionIndicator, SelectionCanvas.GetComponent<GUISelection>().showInfoColor);
+        //SelectionCanvas.GetComponent<GUISelection>().setIndicatorColor(unit.GetComponent<HumanInfo>().selectionIndicator, SelectionCanvas.GetComponent<GUISelection>().showInfoColor);
         GetComponent<PanelValuesManager>().SetAllHumanInformation(unit.GetComponent<HumanInfo>());
         GetComponent<InventoryPanelController>().SetHumanInventory(unit.GetComponent<HumanInfo>());
     }
@@ -217,7 +217,7 @@ public class InputManager : MonoBehaviour
     {
         unit.GetComponent<HumanInfo>().isInfoShown = false;
         HumanWithShownInfo = null;
-        SelectionCanvas.GetComponent<GUISelection>().setIndicatorColor(unit.GetComponent<HumanInfo>().selectionIndicator, SelectionCanvas.GetComponent<GUISelection>().hideInfoColor);
+        //SelectionCanvas.GetComponent<GUISelection>().setIndicatorColor(unit.GetComponent<HumanInfo>().selectionIndicator, SelectionCanvas.GetComponent<GUISelection>().hideInfoColor);
     }
 
 }

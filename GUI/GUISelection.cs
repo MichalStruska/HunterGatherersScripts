@@ -27,8 +27,8 @@ public class GUISelection : MonoBehaviour
     //public GameObject MyImage;
     public Image MyImage;
     public GameObject myCanvas;
-    public Image SelectionImageTemplate;
-    public List<Image> images;
+    public GameObject SelectionImageTemplate;
+    public List<GameObject> images;
     public List<Image> targetImages;
     public List<Image> activeTargetImages;
     public List<bool> activeTargetImagesBool;
@@ -60,7 +60,7 @@ public class GUISelection : MonoBehaviour
     void Start()
     {
         humans = Player.GetComponent<InputManager>().units;
-        images = new List<Image>();
+        images = new List<GameObject>();
         targetImages = new List<Image>();
         targetPositions = new List<Vector3>();
 
@@ -92,10 +92,13 @@ public class GUISelection : MonoBehaviour
         }
 
         selectedUnits = Player.GetComponent<InputManager>().selectedUnits;
+
         foreach (GameObject hu in selectedUnits)
-        {            
-            IndicatorPosition(hu.GetComponent<HumanInfo>().selectionIndicator.rectTransform, new Vector3(hu.transform.position.x, hu.transform.position.y + indicatorHeight, hu.transform.position.z));
-            SetIndicatorSize(hu.GetComponent<HumanInfo>().selectionIndicator.rectTransform, new Vector3(hu.transform.position.x, hu.transform.position.y + indicatorHeight, hu.transform.position.z), 20f, 20f);
+        {
+            //IndicatorPosition(hu.GetComponent<HumanInfo>().selectionIndicator.rectTransform, new Vector3(hu.transform.position.x, hu.transform.position.y + indicatorHeight, hu.transform.position.z));
+            Vector3 humanIndicatorPosition = new Vector3(hu.transform.position.x, hu.transform.position.y + 5, hu.transform.position.z);
+            SetIndicatorPosition(hu.GetComponent<HumanInfo>().selectionIndicator, humanIndicatorPosition);
+            //SetIndicatorSize(hu.GetComponent<HumanInfo>().selectionIndicator.rectTransform, new Vector3(hu.transform.position.x, hu.transform.position.y + indicatorHeight, hu.transform.position.z), 20f, 20f);
             IndicatorPosition(hu.GetComponent<HumanInfo>().targetIndicator.rectTransform, hu.GetComponent<HumanInfo>().targetIndicatorPosition);
             SetIndicatorSize(hu.GetComponent<HumanInfo>().targetIndicator.rectTransform, hu.GetComponent<HumanInfo>().targetIndicatorPosition, 20f, 20f);
             
@@ -115,10 +118,52 @@ public class GUISelection : MonoBehaviour
 
     }
 
+    public void CreateTargetIndicator(Image img, GameObject parent, List<Image> imgList, GameObject human)
+    {
+        human.GetComponent<HumanInfo>().targetIndicator = Instantiate(img, Vector3.zero, Quaternion.identity);
+        Image targetIndicator = human.GetComponent<HumanInfo>().targetIndicator;
+
+        targetIndicator.transform.SetParent(parent.transform, false);
+        targetIndicator.rectTransform.anchoredPosition = Vector3.zero;
+        targetIndicator.enabled = false;
+        imgList.Add(targetIndicator);
+    }
+    
+    public void CreateSelectionIndicator(GameObject selectionIndicator, GameObject parent, List<GameObject> imgList, GameObject human)
+    {
+        human.GetComponent<HumanInfo>().selectionIndicator = Instantiate(selectionIndicator, Vector3.zero, Quaternion.Euler(90, 0, 0));
+        GameObject selectionIndicator_ = human.GetComponent<HumanInfo>().selectionIndicator;
+
+        selectionIndicator_.transform.SetParent(parent.transform, false);
+        selectionIndicator_.transform.position = human.transform.position;
+        //selectionIndicator.rectTransform.anchoredPosition = Vector3.zero;
+        selectionIndicator_.SetActive(false);
+        //setIndicatorColor(selectionIndicator, hideInfoColor);
+        imgList.Add(selectionIndicator_);
+    }
+    
+    public void CreateTaskLoadingBar(GameObject slider, GameObject parent, int barNumber)
+    {
+        GameObject loadingBar = Instantiate(slider, Vector3.zero, Quaternion.identity);
+
+        loadingBar.transform.SetParent(parent.transform, false);
+        loadingBar.transform.position = new Vector3(50f,50f,50f);
+        loadingBar.SetActive(false);
+
+        taskLoadingBars[barNumber].empty = true;
+        taskLoadingBars[barNumber].slider = loadingBar;
+        taskLoadingBars[barNumber].gameObject = null;
+    }
+
     public void IndicatorPosition(RectTransform rectTransform, Vector3 originalPosition)
     {
         Vector3 screenPos = activeCamera.WorldToScreenPoint(originalPosition);
         rectTransform.anchoredPosition = new Vector3(screenPos.x, screenPos.y, screenPos.z);
+    }
+
+    public void SetIndicatorPosition(GameObject selectionIndicator, Vector3 IndicatorPosition)
+    {
+        selectionIndicator.transform.position = IndicatorPosition;
     }
 
     public void SetIndicatorSize(RectTransform rectTransform, Vector3 originalPosition, float originalWidth, float originalHeight)
@@ -143,44 +188,6 @@ public class GUISelection : MonoBehaviour
             rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, originalHeight);
             rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, originalWidth);
         }
-        
-
-    }
-
-    public void CreateTargetIndicator(Image img, GameObject parent, List<Image> imgList, GameObject human)
-    {
-        human.GetComponent<HumanInfo>().targetIndicator = Instantiate(img, Vector3.zero, Quaternion.identity);
-        Image targetIndicator = human.GetComponent<HumanInfo>().targetIndicator;
-
-        targetIndicator.transform.SetParent(parent.transform, false);
-        targetIndicator.rectTransform.anchoredPosition = Vector3.zero;
-        targetIndicator.enabled = false;
-        imgList.Add(targetIndicator);
-    }
-    
-    public void CreateSelectionIndicator(Image img, GameObject parent, List<Image> imgList, GameObject human)
-    {
-        human.GetComponent<HumanInfo>().selectionIndicator = Instantiate(img, Vector3.zero, Quaternion.identity);
-        Image selectionIndicator = human.GetComponent<HumanInfo>().selectionIndicator;
-
-        selectionIndicator.transform.SetParent(parent.transform, false);
-        selectionIndicator.rectTransform.anchoredPosition = Vector3.zero;
-        selectionIndicator.enabled = false;
-        setIndicatorColor(selectionIndicator, hideInfoColor);
-        imgList.Add(selectionIndicator);
-    }
-    
-    public void CreateTaskLoadingBar(GameObject slider, GameObject parent, int barNumber)
-    {
-        GameObject loadingBar = Instantiate(slider, Vector3.zero, Quaternion.identity);
-
-        loadingBar.transform.SetParent(parent.transform, false);
-        loadingBar.transform.position = new Vector3(50f,50f,50f);
-        loadingBar.SetActive(false);
-
-        taskLoadingBars[barNumber].empty = true;
-        taskLoadingBars[barNumber].slider = loadingBar;
-        taskLoadingBars[barNumber].gameObject = null;
     }
 
     public void UpdateTaskLoadingBarPosition(GameObjectWithTaskLoadingBar taskLoadingBarObject)
