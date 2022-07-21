@@ -20,6 +20,7 @@ public class HumanInfo : OrganismInfoBase
     public int gait;
 
     public GameObject MainCanvas;
+    public GameObject HumansPanel;
     public HumanTaskList humanTask;
     public HumanTargetTaskList humanTargetTask;
     public GameObject MinimapIndicator;
@@ -143,10 +144,12 @@ public class HumanInfo : OrganismInfoBase
     {
         //base.Die();
         DeselectHuman();
+        HumansPanel.GetComponent<HumanThumbnailsManager>().DeleteThumbnail(gameObject);
         humanTask = HumanTaskList.Dead;
         GetComponent<MovementManager>().enabled = false;
         GetComponent<HumanThermoModel>().enabled = false;
         Destroy(gameObject);
+        Debug.Log("created thumbnail a death");
         Player.GetComponent<InputManager>().units.RemoveAll(s => s.GetComponent<HumanInfo>().humanTask == HumanTaskList.Dead);
 
     }

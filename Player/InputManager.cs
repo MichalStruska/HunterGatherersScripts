@@ -36,10 +36,19 @@ public class InputManager : MonoBehaviour
 
     public GameObject HumanWithShownInfo;
 
-    void Start()
+    public GameObject HumansPanel;
+
+    void Awake()
     {
         GameObject[] unitsArray = GameObject.FindGameObjectsWithTag("Selectable");
         units.AddRange(unitsArray);
+
+        HumansPanel.GetComponent<HumanThumbnailsManager>().SetThumbnails();
+    }
+
+    void Start()
+    {
+
         selectedUnits = new List<GameObject>();
         Cursor.SetCursor(cursorTextureDefault, Vector2.zero, cursorMode);
 
@@ -202,6 +211,11 @@ public class InputManager : MonoBehaviour
         unit.GetComponent<HumanInfo>().isInfoShown = false;
         HumanWithShownInfo = null;
         //SelectionCanvas.GetComponent<GUISelection>().setIndicatorColor(unit.GetComponent<HumanInfo>().selectionIndicator, SelectionCanvas.GetComponent<GUISelection>().hideInfoColor);
+    }
+
+    public int GetHumansLength()
+    {
+        return units.Count;
     }
 
 }
