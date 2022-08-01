@@ -103,7 +103,7 @@ public class HumanInfo : OrganismInfoBase
 
     public void SetSpeedSlider()
     {
-        Player.GetComponent<PanelValuesManager>().SetSpeed(this);
+        Player.GetComponent<PanelValuesManager>().SetSpeed(gameObject);
         Player.GetComponent<PanelValuesManager>().SetSpeedText();
     }
 

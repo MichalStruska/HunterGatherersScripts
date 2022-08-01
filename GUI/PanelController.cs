@@ -86,15 +86,15 @@ public class PanelController : MonoBehaviour
             {
                 case 0:
                     speedSlider.enabled = true;
-                   
+                    Debug.Log("nastaveni runspeed " + unit.GetComponent<HumanGaitInfo>().maxRunSpeed);
                     SetSpeedSliderLimits(unit.GetComponent<HumanGaitInfo>().minRunSpeed, unit.GetComponent<HumanGaitInfo>().maxRunSpeed);
                     unit.GetComponent<HumanInfo>().humanTask = HumanTaskList.Running;
                     unit.GetComponent<HumanGaitInfo>().gait = HumanGaitList.Running;
                     unit.GetComponent<HumanInfo>().gait = val;
                     break;
                 case 1:
-                    speedSlider.enabled = true;                    
-                    
+                    speedSlider.enabled = true;
+                    Debug.Log("nastaveni walkspeed");
                     SetSpeedSliderLimits(unit.GetComponent<HumanGaitInfo>().minWalkSpeed, unit.GetComponent<HumanGaitInfo>().maxWalkSpeed);
                     unit.GetComponent<HumanInfo>().humanTask = HumanTaskList.Walking;
                     unit.GetComponent<HumanGaitInfo>().gait = HumanGaitList.Walking;
@@ -118,15 +118,7 @@ public class PanelController : MonoBehaviour
 
     void SpeedChanged()
     {
-        //if (GetComponent<InputManager>().HumanWithShownInfo != null)
-        //{
-        //    GameObject unit = GetComponent<InputManager>().HumanWithShownInfo;
-        //    unit.GetComponent<MovementManager>().actionList.Move(unit.GetComponent<MovementManager>().agent, unit.GetComponent<MovementManager>().shiftedPoint, speedSlider.value, unit.GetComponent<MovementManager>().unitNumber);
-        //    unit.GetComponent<HumanGaitInfo>().speed = speedSlider.value;
-        //    unit.GetComponent<HumanGaitInfo>().SetAnimationSpeed(speedSlider.maxValue);
-
-        //}
-
+        
         foreach (GameObject unit in units)
         {
 
@@ -163,16 +155,14 @@ public class PanelController : MonoBehaviour
             if (unit.GetComponent<HumanInfo>().isHunting)
             {
                 unit.GetComponent<MovementManager>().QuitHunt();
-                //unit.GetComponent<MovementManager>().GetComponent<HumanInfo>().isHunting = false;
-                //unit.GetComponent<MovementManager>().originalHitPoint = unit.transform.position + new Vector3(10, 0, 10);
-                //unit.GetComponent<MovementManager>().GroundWalk();
+               
             }
         }
         GetComponent<InputManager>().huntingMode = false;
         quitHuntButton.gameObject.SetActive(false);
     }
 
-    void NextHuman()
+    public void NextHuman()
     {
         int originalPickedHumanNumber = pickedHumanNumber;
         if (pickedHumanNumber < GetComponent<InputManager>().selectedUnits.Count - 1)
@@ -210,7 +200,6 @@ public class PanelController : MonoBehaviour
         ShowPanel(HumanInfoPanel);
         if (GetComponent<InputManager>().selectedUnits[pickedHumanNumber].GetComponent<HumanInfo>().humanTask == HumanTaskList.Walking || GetComponent<InputManager>().selectedUnits[pickedHumanNumber].GetComponent<HumanInfo>().humanTask == HumanTaskList.Running)
         {
-            Debug.Log("gait shown");
             ShowPanel(HumanGaitPanel);
         }
         

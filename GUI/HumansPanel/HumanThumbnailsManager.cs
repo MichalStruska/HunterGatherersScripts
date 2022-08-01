@@ -65,6 +65,7 @@ public class HumanThumbnailsManager : MonoBehaviour
     public void GetHuman(GameObject human)
     {
         Debug.Log("kliknul " + human.name);
+        Player.GetComponent<CameraManager>().GoToObject(human);
     }
 
     public void DeleteThumbnail(GameObject deadHuman)

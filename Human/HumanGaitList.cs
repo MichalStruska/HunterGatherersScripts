@@ -4,8 +4,8 @@ using UnityEngine;
 
 public enum HumanGaitList
 {
-    Walking,
     Running,
+    Walking,
     Standing,
 }
 

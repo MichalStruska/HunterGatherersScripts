@@ -213,4 +213,9 @@ public class CameraManager : MonoBehaviour
         Camera.main.transform.position = newPos;
     }
 
+    public void GoToObject(GameObject targetObject)
+    {
+        mainCamera.transform.position = new Vector3(targetObject.transform.position.x, mainCamera.transform.position.y, targetObject.transform.position.z);
+    }
+
 }

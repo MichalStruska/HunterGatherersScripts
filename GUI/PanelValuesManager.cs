@@ -27,6 +27,7 @@ public class PanelValuesManager : MonoBehaviour
     public TMP_Dropdown GaitDropdown;
 
     private HumanInfo HumanInfo;
+    private HumanGaitInfo humanGaitInfo;
 
     void Start()
     {
@@ -38,14 +39,16 @@ public class PanelValuesManager : MonoBehaviour
         
     }
 
-    public void SetAllHumanInformation(HumanInfo HumanInfo)
+    public void SetAllHumanInformation(GameObject human)
     {
-        SetBodyFunctions(HumanInfo);
-        SetHumanInformation(HumanInfo);
+        HumanInfo humanInfo = human.GetComponent<HumanInfo>();
+        SetBodyFunctions(human.GetComponent<HumanInfo>());
+        SetHumanInformation(human.GetComponent<HumanInfo>());
 
-        if (HumanInfo.humanTask == HumanTaskList.Walking || HumanInfo.humanTask == HumanTaskList.Running)
+        if (humanInfo.humanTask == HumanTaskList.Walking || humanInfo.humanTask == HumanTaskList.Running)
         {
-            SetSpeed(HumanInfo);
+            Debug.Log("nastav rychlost");
+            SetSpeed(human);
         }
     }
 
@@ -66,21 +69,23 @@ public class PanelValuesManager : MonoBehaviour
         TemperatureDisplay.text = "T: " + HumanInfo.coreTemperature;
     }
 
-    public void SetSpeed(HumanInfo HumanInfo)
+    public void SetSpeed(GameObject human)
     {
+        HumanGaitInfo HumanGaitInfo = human.GetComponent<HumanGaitInfo>();
+        HumanInfo HumanInfo = human.GetComponent<HumanInfo>();
         switch (HumanInfo.humanTask)
         {
             case HumanTaskList.Running:
-                SpeedSlider.maxValue = HumanInfo.maxRunSpeed;
-                SpeedSlider.minValue = HumanInfo.minRunSpeed;
-                SpeedSlider.value = HumanInfo.speed;
+                /*SpeedSlider.maxValue = HumanInfo.maxRunSpeed;
+                SpeedSlider.minValue = HumanInfo.minRunSpeed;*/
+                SpeedSlider.value = HumanGaitInfo.speed;
                 GaitDropdown.value = HumanInfo.gait;
                 break;
 
             case HumanTaskList.Walking:
-                SpeedSlider.maxValue = HumanInfo.maxWalkSpeed;
-                SpeedSlider.minValue = HumanInfo.minWalkSpeed;
-                SpeedSlider.value = HumanInfo.speed;
+                /*SpeedSlider.maxValue = HumanInfo.maxWalkSpeed;
+                SpeedSlider.minValue = HumanInfo.minWalkSpeed;*/
+                SpeedSlider.value = HumanGaitInfo.speed;
                 GaitDropdown.value = HumanInfo.gait;
                 break;
 
@@ -90,8 +95,8 @@ public class PanelValuesManager : MonoBehaviour
                 break;
         }
 
-        SpeedSlider.value = HumanInfo.speed;
-        GaitDropdown.value = HumanInfo.gait;
+        SpeedSlider.value = HumanGaitInfo.speed;
+        GaitDropdown.value = (int)HumanGaitInfo.gait;
         SpeedDisplay.text = System.Math.Round(SpeedSlider.value, 2).ToString();
     }
 

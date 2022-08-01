@@ -14,6 +14,7 @@ public class TeleportToHut : Action
     public NavMeshAgent agent;
     public Vector3 hutPosition;
     public SharedGameObject TargetHut;
+    public GameObject Player;
 
     public override void OnAwake()
     {
@@ -26,7 +27,9 @@ public class TeleportToHut : Action
     {
         //hutPosition = GetComponent<MovementManager>().originalHitPoint;
         hutPosition = TargetHut.Value.GetComponent<Collider>().bounds.center;
+        DeselectCurrentHumanIfActive();
         currentGameObject.transform.position = new Vector3(hutPosition.x, hutPosition.y, hutPosition.z); //+ TargetHut.Value.GetComponent<HutManager>().AddHuman();
+        currentGameObject.transform.localScale = new Vector3(0, 0, 0);
         TargetHut.Value.GetComponent<HutManager>().AddHuman(currentGameObject);
         currentGameObject.GetComponent<HumanInfo>().isInHut = true;
         return TaskStatus.Success;
@@ -35,6 +38,19 @@ public class TeleportToHut : Action
     public override void OnReset()
     {
         
+    }
+
+    public void DeselectCurrentHumanIfActive()
+    {
+        if (IsCurrentHumanActive())
+        {
+            Player.GetComponent<InputManager>().DeselectHuman(currentGameObject);
+        }
+    }
+
+    private bool IsCurrentHumanActive()
+    {
+        return currentGameObject.GetComponent<HumanInfo>().isSelected;
     }
 
 }

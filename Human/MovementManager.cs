@@ -55,6 +55,8 @@ public class MovementManager : MonoBehaviour
     public float locomotionSpeed;
     private int gaitInterfaceValue;
 
+    public Vector3 teleportOutOfHutPositionShift;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -70,6 +72,7 @@ public class MovementManager : MonoBehaviour
 
         walkSpeed = GetComponent<HumanGaitInfo>().minWalkSpeed;
         runSpeed = GetComponent<HumanGaitInfo>().minRunSpeed;
+
     }
 
     void Update()
@@ -102,6 +105,11 @@ public class MovementManager : MonoBehaviour
             SetupTargetIndicator(prey.transform.position);
 
         }
+        else if (GetComponent<HumanInfo>().isInHut && Input.GetMouseButtonDown(1))
+        {
+            TeleportOutOfHut();
+            Player.GetComponent<HutPanelController>().ExitHut();
+        }
         else if (Input.GetMouseButtonDown(1) && GetComponent<HumanInfo>().isSelected)
         {
             isDoubleClick = IsDoubleClick();
@@ -109,11 +117,6 @@ public class MovementManager : MonoBehaviour
             
         }
 
-        if (GetComponent<HumanInfo>().isInHut && Input.GetMouseButtonDown(1))
-        {
-            //TeleportOutOfHut();
-            Player.GetComponent<HutPanelController>().ExitHut();
-        }
     }
 
     private void QuitDigging()
@@ -192,11 +195,13 @@ public class MovementManager : MonoBehaviour
 
     public void RightClick()
     {
+        Debug.Log("trefil zemi 0" + transform.position);
         orderRun = false;
         gaitInterfaceValue = 1;
         locomotionSpeed = walkSpeed;
         potentialTask = HumanTaskList.Walking;
         potentialGait = HumanGaitList.Walking;
+        
         ProcessClick();
     }
 
@@ -218,6 +223,7 @@ public class MovementManager : MonoBehaviour
         if (DidHitGround())
         {
             originalHitPoint = hit.point;
+            Debug.Log("trefil zemi 1 " + transform.position);
             GroundWalk();
         }
         else if (DidHitTuber())
@@ -239,7 +245,7 @@ public class MovementManager : MonoBehaviour
         else if (DidHitAnimal())
         {
             prey = hit.transform.gameObject;
-            SetupGaitInterface(gaitInterfaceValue);
+            //SetupGaitInterface(gaitInterfaceValue);
             if (unitNumber == 0)
             {
                 GetPositionOfHunterAndPrey();
@@ -260,6 +266,7 @@ public class MovementManager : MonoBehaviour
 
     public void GroundWalk()
     {
+        Debug.Log("trefil zemi 02" + transform.position);
         SetUpLocomotion();
         SetUpTargetTask(HumanTargetTaskList.Idle);
         
@@ -337,12 +344,15 @@ public class MovementManager : MonoBehaviour
         GaitDropdown.gameObject.SetActive(true);
         ChangeGaitDropdown(gaitInterfaceValue);
         GetComponent<HumanInfo>().SetSpeedSlider();
+        //Player.GetComponent<PanelController>().SetSpeedSliderLimits(GetComponent<HumanGaitInfo>().minWalkSpeed, GetComponent<HumanGaitInfo>().maxWalkSpeed)
     }
 
     IEnumerator OrderDelay()
     {
+        Debug.Log("trefil zemi 03" + transform.position);
         yield return new WaitForSeconds(Random.Range(0f, 0f));
         actionList.Move(agent, shiftedPoint, locomotionSpeed, unitNumber);
+        Debug.Log("trefil zemi 04" + transform.position);
     }
 
     public void GetIndividualTarget(Vector3 hitPoint)
@@ -362,6 +372,7 @@ public class MovementManager : MonoBehaviour
     
     public void GoThere(Vector3 targetIndicatorPosition)
     {
+        GetComponent<HumanGaitInfo>().speed = locomotionSpeed;
         SetupGaitInterface(gaitInterfaceValue);
         SetupTargetIndicator(targetIndicatorPosition);
         SetUpLocomotion();
@@ -441,8 +452,19 @@ public class MovementManager : MonoBehaviour
 
     public void TeleportOutOfHut()
     {
+        transform.localScale = new Vector3(1, 1, 1);
         GetComponent<HumanInfo>().isInHut = false;
         GetComponent<HumanInfo>().humanTask = HumanTaskList.Idle;
-        transform.position = new Vector3(hutPosition.x - 50, hutPosition.y, hutPosition.z - 50);
+        Vector3 teleportOutOfHutPosition = new Vector3(hutPosition.x - 40, hutPosition.y, hutPosition.z - 40); //hutPosition + teleportOutOfHutPositionShift;
+        //transform.position = teleportOutOfHutPosition;
+        //agent.updatePosition = true;
+        if (agent.Warp(teleportOutOfHutPosition))
+        {
+            GetComponent<HumanInfo>().selectionIndicator.SetActive(true);
+        }
+        //agent.nextPosition = teleportOutOfHutPosition;
+        
+        //originalHitPoint = teleportOutOfHutPosition;
+        //GroundWalk();
     }
 }

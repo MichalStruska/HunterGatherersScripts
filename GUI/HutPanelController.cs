@@ -21,6 +21,7 @@ public class HutPanelController : MonoBehaviour
     public Button SleepButton;
     public List<GameObject> selectedUnits;
     public GameObject Player;
+    public GameObject activeHut;
 
     public int panelOnCounter;
     public bool leftClickOnPanel;
@@ -36,6 +37,8 @@ public class HutPanelController : MonoBehaviour
     public Color TakenSpaceColor;
 
     public int selectedHumanNumber;
+
+    public GameObject humanPlaceholderImageObject;
 
     [SerializeField]
     public HumanButton[] humanButtons = new HumanButton[6];
@@ -182,19 +185,25 @@ public class HutPanelController : MonoBehaviour
 
     public void ClickOnHumanButton(int humanButtonNumber)
     {
-        Debug.Log("clocked od human " + humanButtons[humanButtonNumber].human);
-
-        if (humanButtons[humanButtonNumber].human != null)
+        GameObject clickedHuman = humanButtons[humanButtonNumber].human;
+        if (clickedHuman != null)
         {
+            clickedHuman.GetComponent<HumanInfo>().humanTask = HumanTaskList.Idle;
             Player.GetComponent<InputManager>().DeselectHuman();
-            Player.GetComponent<InputManager>().SelectHuman(humanButtons[humanButtonNumber].human);
+            Player.GetComponent<InputManager>().SelectHuman(clickedHuman);
+            clickedHuman.GetComponent<HumanInfo>().selectionIndicator.SetActive(false);
+            HutSelected(activeHut);
         }
     }
 
     public void ExitHut()
     {
-        HutSpaceFree(humanButtons[selectedHumanNumber].button);
+        //HutSpaceFree(humanButtons[selectedHumanNumber].button);
         humanButtons[selectedHumanNumber].human = null;
+        activeHut.GetComponent<HutManager>().positions[selectedHumanNumber].availability = true;
+        activeHut.GetComponent<HutManager>().RemoveHuman();
+        RefreshHumanPanel(activeHut);
+        HutDeselected();
     }
 
     public void UpdateTuberCounter(int tuberCounter, int maxTuberNumber)
@@ -205,6 +214,7 @@ public class HutPanelController : MonoBehaviour
 
     public void HutSelected(GameObject Hut)
     {
+        activeHut = Hut;
         ShowPanel(HumanHutPeoplePanel);
         ShowPanel(HutInventoryPanel);
         RefreshHumanPanel(Hut);
@@ -218,7 +228,7 @@ public class HutPanelController : MonoBehaviour
 
     public void RefreshHumanPanel(GameObject Hut)
     {
-        
+
         int positionCounter = 0;
         foreach (Positions position in Hut.GetComponent<HutManager>().positions)
         {
@@ -228,23 +238,23 @@ public class HutPanelController : MonoBehaviour
             }
             else
             {
-                HutSpaceTaken(humanButtons[positionCounter].button);
                 humanButtons[positionCounter].human = position.human;
+                HutSpaceTaken(positionCounter);
             }
-            Debug.Log("refresh panel " + humanButtons[positionCounter].human);
 
             positionCounter++;
         }
     }
 
-    public void HutSpaceTaken(Button button)
+    public void HutSpaceTaken(int positionCounter)
     {
-        button.GetComponent<Image>().color = TakenSpaceColor;
+        humanButtons[positionCounter].button.GetComponent<Image>().sprite = humanButtons[positionCounter].human.GetComponent<HumanGUIHolder>().ThumbnailObject.GetComponent<SpriteRenderer>().sprite;
+        //button.GetComponent<Image>().color = TakenSpaceColor;
     }
 
     public void HutSpaceFree(Button button)
     {
-        button.GetComponent<Image>().color = FreeSpaceColor;
+        button.GetComponent<Image>().sprite = humanPlaceholderImageObject.GetComponent<SpriteRenderer>().sprite;
     }
 
 }

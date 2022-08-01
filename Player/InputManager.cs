@@ -146,11 +146,9 @@ public class InputManager : MonoBehaviour
 
     public void SelectHuman(GameObject Human)
     {
-        selectedInfo = Human.GetComponent<HumanInfo>();
-
         GetComponent<PanelController>().HumanDeselected();
 
-        selectedInfo.isSelected = true;
+        Human.GetComponent<HumanInfo>().isSelected = true;
         selectedUnits.Add(Human);
         ShowHumanInfo(Human);
         GetComponent<PanelController>().HumanSelected();
@@ -178,6 +176,15 @@ public class InputManager : MonoBehaviour
         }
     }
 
+    public void DeselectHuman(GameObject human)
+    {
+        GetComponent<PanelController>().NextHuman();
+        selectedUnits.Remove(human);
+        human.GetComponent<HumanInfo>().DeselectHuman();
+        GetComponent<PanelController>().HumanDeselected();
+        HideHumanInfo(human);
+    }
+
     public bool IsPointerOverUIObject()
     {
         PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
@@ -202,7 +209,7 @@ public class InputManager : MonoBehaviour
         unit.GetComponent<HumanInfo>().isInfoShown = true;
         HumanWithShownInfo = unit;
         //SelectionCanvas.GetComponent<GUISelection>().setIndicatorColor(unit.GetComponent<HumanInfo>().selectionIndicator, SelectionCanvas.GetComponent<GUISelection>().showInfoColor);
-        GetComponent<PanelValuesManager>().SetAllHumanInformation(unit.GetComponent<HumanInfo>());
+        GetComponent<PanelValuesManager>().SetAllHumanInformation(unit);
         GetComponent<InventoryPanelController>().SetHumanInventory(unit.GetComponent<HumanInfo>());
     }
     
