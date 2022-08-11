@@ -13,6 +13,8 @@ public class PanelValuesManager : MonoBehaviour
     public Text BodyHeightDisplay;
     public Text SexDisplay;
 
+    public Image humanThumbnailImage;
+
     public Slider HealthBar;
     public Text HealthDisplay;
     public Slider WaterBar;
@@ -44,6 +46,7 @@ public class PanelValuesManager : MonoBehaviour
         HumanInfo humanInfo = human.GetComponent<HumanInfo>();
         SetBodyFunctions(human.GetComponent<HumanInfo>());
         SetHumanInformation(human.GetComponent<HumanInfo>());
+        SetHumanThumbnail(human);
 
         if (humanInfo.humanTask == HumanTaskList.Walking || humanInfo.humanTask == HumanTaskList.Running)
         {
@@ -67,6 +70,7 @@ public class PanelValuesManager : MonoBehaviour
         TemperatureBar.minValue = HumanInfo.coreTemperatureMin;
         TemperatureBar.value = HumanInfo.coreTemperature;
         TemperatureDisplay.text = "T: " + HumanInfo.coreTemperature;
+
     }
 
     public void SetSpeed(GameObject human)
@@ -113,5 +117,10 @@ public class PanelValuesManager : MonoBehaviour
         BodyMassDisplay.text = HumanInfo.mass.ToString();
         BodyHeightDisplay.text = HumanInfo.stature.ToString();
         SexDisplay.text = Enum.GetName(typeof(HumanSexList), HumanInfo.sex);
+    }
+
+    public void SetHumanThumbnail(GameObject human)
+    {
+        humanThumbnailImage.sprite = human.GetComponent<HumanGUIHolder>().HumanThumbnailGeneral.sprite;
     }
 }

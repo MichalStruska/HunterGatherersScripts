@@ -28,6 +28,7 @@ public class GUISelection : MonoBehaviour
     public Image MyImage;
     public GameObject myCanvas;
     public GameObject SelectionImageTemplate;
+    public GameObject TargetImageTemplate;
     public List<GameObject> images;
     public List<Image> targetImages;
     public List<Image> activeTargetImages;
@@ -37,7 +38,7 @@ public class GUISelection : MonoBehaviour
     public float indicatorHeight = 30f;
 
     public Image TargetImage;
-    public Image TargetImageTemplate;
+    //public Image TargetImageTemplate;
     public Image ImgPok;
 
     public GameObject TaskLoadingBarTemplate;
@@ -98,9 +99,10 @@ public class GUISelection : MonoBehaviour
             //IndicatorPosition(hu.GetComponent<HumanInfo>().selectionIndicator.rectTransform, new Vector3(hu.transform.position.x, hu.transform.position.y + indicatorHeight, hu.transform.position.z));
             Vector3 humanIndicatorPosition = new Vector3(hu.transform.position.x, hu.transform.position.y + 5, hu.transform.position.z);
             SetIndicatorPosition(hu.GetComponent<HumanInfo>().selectionIndicator, humanIndicatorPosition);
+            SetIndicatorPosition(hu.GetComponent<HumanInfo>().targetIndicator, hu.GetComponent<HumanInfo>().targetIndicatorPosition);
             //SetIndicatorSize(hu.GetComponent<HumanInfo>().selectionIndicator.rectTransform, new Vector3(hu.transform.position.x, hu.transform.position.y + indicatorHeight, hu.transform.position.z), 20f, 20f);
-            IndicatorPosition(hu.GetComponent<HumanInfo>().targetIndicator.rectTransform, hu.GetComponent<HumanInfo>().targetIndicatorPosition);
-            SetIndicatorSize(hu.GetComponent<HumanInfo>().targetIndicator.rectTransform, hu.GetComponent<HumanInfo>().targetIndicatorPosition, 20f, 20f);
+            //IndicatorPosition(hu.GetComponent<HumanInfo>().targetIndicator.rectTransform, hu.GetComponent<HumanInfo>().targetIndicatorPosition);
+            //SetIndicatorSize(hu.GetComponent<HumanInfo>().targetIndicator.rectTransform, hu.GetComponent<HumanInfo>().targetIndicatorPosition, 20f, 20f);
             
         }
 
@@ -118,15 +120,16 @@ public class GUISelection : MonoBehaviour
 
     }
 
-    public void CreateTargetIndicator(Image img, GameObject parent, List<Image> imgList, GameObject human)
+    public void CreateTargetIndicator(GameObject targetIndicator, GameObject parent, List<Image> imgList, GameObject human)
     {
-        human.GetComponent<HumanInfo>().targetIndicator = Instantiate(img, Vector3.zero, Quaternion.identity);
-        Image targetIndicator = human.GetComponent<HumanInfo>().targetIndicator;
+        human.GetComponent<HumanInfo>().targetIndicator = Instantiate(targetIndicator, Vector3.zero, Quaternion.Euler(90, 0, 0));
+        GameObject targetIndicatorInstant = human.GetComponent<HumanInfo>().targetIndicator;
 
-        targetIndicator.transform.SetParent(parent.transform, false);
-        targetIndicator.rectTransform.anchoredPosition = Vector3.zero;
-        targetIndicator.enabled = false;
-        imgList.Add(targetIndicator);
+        targetIndicatorInstant.transform.SetParent(parent.transform, false);
+        //targetIndicator.rectTransform.anchoredPosition = Vector3.zero;
+        targetIndicatorInstant.transform.position = human.transform.position;
+        targetIndicatorInstant.SetActive(false);
+        //imgList.Add(targetIndicatorInstant);
     }
     
     public void CreateSelectionIndicator(GameObject selectionIndicator, GameObject parent, List<GameObject> imgList, GameObject human)
@@ -139,7 +142,7 @@ public class GUISelection : MonoBehaviour
         //selectionIndicator.rectTransform.anchoredPosition = Vector3.zero;
         selectionIndicator_.SetActive(false);
         //setIndicatorColor(selectionIndicator, hideInfoColor);
-        imgList.Add(selectionIndicator_);
+        //imgList.Add(selectionIndicator_);
     }
     
     public void CreateTaskLoadingBar(GameObject slider, GameObject parent, int barNumber)

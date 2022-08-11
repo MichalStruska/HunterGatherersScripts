@@ -382,13 +382,13 @@ public class MovementManager : MonoBehaviour
 
     public void SetupTargetIndicator(Vector3 targetIndicatorPosition)
     {
-        GetComponent<HumanInfo>().targetIndicatorPosition = targetIndicatorPosition;
-        GetComponent<HumanInfo>().targetIndicator.enabled = true;
+        GetComponent<HumanInfo>().targetIndicatorPosition = new Vector3(targetIndicatorPosition.x, targetIndicatorPosition.y + 10, targetIndicatorPosition.z);
+        GetComponent<HumanInfo>().targetIndicator.SetActive(true);
     }
 
     public void TurnOffTargetIndicator()
     {
-        GetComponent<HumanInfo>().targetIndicator.enabled = false;
+        GetComponent<HumanInfo>().targetIndicator.SetActive(false);
     }
 
     public void ChangeGaitDropdown(int gaitValue)
@@ -432,11 +432,13 @@ public class MovementManager : MonoBehaviour
     public void HideGaitPanel()
     {
         Player.GetComponent<PanelController>().HidePanel(Player.GetComponent<PanelController>().HumanGaitPanel);
+        Player.GetComponent<PanelController>().GaitPanelButton.SetInteractability(false);
     }
     
     public void ShowGaitPanel()
     {
         Player.GetComponent<PanelController>().ShowPanel(Player.GetComponent<PanelController>().HumanGaitPanel);
+        Player.GetComponent<PanelController>().GaitPanelButton.SetInteractability(true);
     }
 
     public void QuitHunt()

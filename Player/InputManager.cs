@@ -107,6 +107,7 @@ public class InputManager : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, ~layerMask))
         {
+            GetComponent<PanelController>().HideAllHumansPanel();
             if (IsPointerOverUIObject())
             {
                 //do nothing

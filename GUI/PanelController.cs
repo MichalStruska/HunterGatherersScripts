@@ -13,12 +13,18 @@ public class PanelController : MonoBehaviour
     public CanvasGroup HumanPickerPanel;
     public CanvasGroup HumanBodyFunctionsPanel;
     public CanvasGroup HumanInfoPanel;
+    public CanvasGroup HumanActionsPanel;
+    public CanvasGroup allHumansPanel;
+    public GameObject HumanInfoTabPanel;
     public CanvasGroup HumanGaitPanel;
     public CanvasGroup HumanInventoryPanel;
     public Slider speedSlider;
     public Button quitHuntButton;
     public Button NextHumanButton;
     public Button PreviousHumanButton;
+    public Button allHumansButton;
+
+    public TabButton GaitPanelButton;
 
     public TMP_Dropdown GaitDropdown;
     Animator HumanAnimator;
@@ -40,14 +46,17 @@ public class PanelController : MonoBehaviour
         HidePanel(HumanBodyFunctionsPanel);
         HidePanel(HumanPickerPanel);
         HidePanel(HumanInfoPanel);
+        HidePanel(HumanActionsPanel);
         HidePanel(HumanGaitPanel);
         HidePanel(HumanInventoryPanel);
+        HideAllHumansPanel();
 
         speedSlider.onValueChanged.AddListener(delegate { SpeedChanged(); });
         speedSlider.enabled = true;
         NextHumanButton.onClick.AddListener(delegate { NextHuman(); });
         PreviousHumanButton.onClick.AddListener(delegate { PreviousHuman(); });
         quitHuntButton.onClick.AddListener(delegate { QuitHunt(); });
+        allHumansButton.onClick.AddListener(delegate { ShowAllHumansPanel(); });
 
         GaitDropdown.gameObject.SetActive(false);
         GaitDropdown.onValueChanged.AddListener(delegate { GaitDropdownChangeReceiver(GaitDropdown.value); });
@@ -194,10 +203,23 @@ public class PanelController : MonoBehaviour
         GetComponent<InputManager>().ShowHumanInfo(GetComponent<InputManager>().selectedUnits[pickedHumanNumber]);
     }
 
+    public void ShowAllHumansPanel()
+    {
+        ShowPanel(allHumansPanel);
+    }
+    
+    public void HideAllHumansPanel()
+    {
+        HidePanel(allHumansPanel);
+    }
+
     public void HumanSelected()
     {
         ShowPanel(HumanBodyFunctionsPanel);
         ShowPanel(HumanInfoPanel);
+        ShowPanel(HumanActionsPanel);
+        HumanInfoTabPanel.GetComponent<TabGroup>().SetDefaultPage();
+
         if (GetComponent<InputManager>().selectedUnits[pickedHumanNumber].GetComponent<HumanInfo>().humanTask == HumanTaskList.Walking || GetComponent<InputManager>().selectedUnits[pickedHumanNumber].GetComponent<HumanInfo>().humanTask == HumanTaskList.Running)
         {
             ShowPanel(HumanGaitPanel);
@@ -212,6 +234,7 @@ public class PanelController : MonoBehaviour
         pickedHumanNumber = 0;
         HidePanel(HumanBodyFunctionsPanel);
         HidePanel(HumanInfoPanel);
+        HidePanel(HumanActionsPanel);
         HidePanel(HumanGaitPanel);
         HidePanel(HumanPickerPanel);
         HidePanel(HumanInventoryPanel);

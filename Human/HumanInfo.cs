@@ -31,7 +31,7 @@ public class HumanInfo : OrganismInfoBase
     private PanelController panelController;
 
     public GameObject selectionIndicator;
-    public Image targetIndicator;
+    public GameObject targetIndicator;
     public Vector3 targetIndicatorPosition;
 
     public bool hasTarget = false;
@@ -71,7 +71,7 @@ public class HumanInfo : OrganismInfoBase
         selectionIndicator.SetActive(true);
         if (hasTarget)
         {
-            targetIndicator.enabled = true;
+            targetIndicator.SetActive(true);
         }
     }
     
@@ -81,7 +81,7 @@ public class HumanInfo : OrganismInfoBase
         MinimapIndicator.GetComponent<MinimapIndicatorManager>().SetIndicatorColorDeselect();
         isInfoShown = false;
         selectionIndicator.SetActive(false);
-        targetIndicator.enabled = false;
+        targetIndicator.SetActive(false);
     }
 
     public void SendHumanFunctions()

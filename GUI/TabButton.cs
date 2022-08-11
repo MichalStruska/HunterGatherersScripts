@@ -11,10 +11,16 @@ public class TabButton : MonoBehaviour, IPointerEnterHandler, IPointerClickHandl
 
     public Image background;
 
+    public bool isInteractable;
+
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        tabGroup.OnTabSelected(this);
+        if (isInteractable)
+        {
+            tabGroup.OnTabSelected(this);
+        }
+            
     }
     
     public void OnPointerExit(PointerEventData eventData)
@@ -24,20 +30,31 @@ public class TabButton : MonoBehaviour, IPointerEnterHandler, IPointerClickHandl
     
     public void OnPointerEnter(PointerEventData eventData)
     {
-        tabGroup.OnTabEnter(this);
+        if (isInteractable)
+        {
+            tabGroup.OnTabEnter(this);
+        }
+        
     }
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         background = GetComponent<Image>();
-        Debug.Log("toto je " + this.name);
-        tabGroup.Subscribe(this);
     }
 
-    // Update is called once per frame
+    void Start()
+    {
+
+    }
+
+
     void Update()
     {
         
+    }
+
+    public void SetInteractability(bool state)
+    {
+        isInteractable = state;
     }
 }
